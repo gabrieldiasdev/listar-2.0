@@ -1,59 +1,12 @@
 import { Check, House, ShoppingCart } from 'lucide-react'
 import { cn } from '@/lib/cn'
-
-interface MockItem {
-  name: string
-  detail?: string
-  checked?: boolean
-}
-
-interface MockSection {
-  title: string
-  items: MockItem[]
-}
-
-interface Screen {
-  title: string
-  subtitle: string
-  activeTab: 'home' | 'shopping'
-  sections: MockSection[]
-}
-
-const screens: Record<'home' | 'shopping', Screen> = {
-  home: {
-    title: 'A nossa casa',
-    subtitle: '4 produtos para comprar',
-    activeTab: 'home',
-    sections: [
-      { title: 'Frutas e legumes', items: [{ name: 'Bananas', checked: true }, { name: 'Cebolas' }] },
-      {
-        title: 'Laticínios',
-        items: [{ name: 'Leite', detail: '6 pacotes · pedido pela Ana', checked: true }, { name: 'Iogurtes' }],
-      },
-      { title: 'Mercearia', items: [{ name: 'Arroz', checked: true }, { name: 'Azeite' }, { name: 'Café', checked: true }] },
-    ],
-  },
-  shopping: {
-    title: 'Supermercado',
-    subtitle: '2 de 4 no carrinho',
-    activeTab: 'shopping',
-    sections: [
-      { title: 'Frutas e legumes', items: [{ name: 'Bananas' }] },
-      { title: 'Mercearia', items: [{ name: 'Café' }] },
-      {
-        title: 'No carrinho',
-        items: [
-          { name: 'Leite', detail: '6 pacotes', checked: true },
-          { name: 'Arroz', checked: true },
-        ],
-      },
-    ],
-  },
-}
+import type { MockItem } from '../content'
+import { useLandingContent } from '../useLandingContent'
 
 /** Illustrative, non-interactive rendering of the app, so the landing needs no screenshots to stay in sync. */
 export function PhoneMockup({ variant, className }: { variant: 'home' | 'shopping'; className?: string }) {
-  const screen = screens[variant]
+  const { mockup } = useLandingContent()
+  const screen = mockup[variant]
   const isShopping = variant === 'shopping'
 
   return (
@@ -82,7 +35,7 @@ export function PhoneMockup({ variant, className }: { variant: 'home' | 'shoppin
               <p
                 className={cn(
                   'mb-1 px-1 text-[0.6rem] font-bold tracking-wider uppercase',
-                  section.title === 'No carrinho' ? 'text-brand-700' : 'text-slate-500',
+                  section.cart ? 'text-brand-700' : 'text-slate-500',
                 )}
               >
                 {section.title}
@@ -97,8 +50,8 @@ export function PhoneMockup({ variant, className }: { variant: 'home' | 'shoppin
         </div>
 
         <div className="grid grid-cols-2 border-t border-slate-200 bg-white py-2 text-[0.6rem] font-semibold">
-          <TabIcon icon={House} label="Casa" active={screen.activeTab === 'home'} />
-          <TabIcon icon={ShoppingCart} label="Supermercado" active={screen.activeTab === 'shopping'} />
+          <TabIcon icon={House} label={mockup.tabs.home} active={!isShopping} />
+          <TabIcon icon={ShoppingCart} label={mockup.tabs.shopping} active={isShopping} />
         </div>
       </div>
     </div>

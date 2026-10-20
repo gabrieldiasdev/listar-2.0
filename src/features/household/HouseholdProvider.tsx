@@ -54,7 +54,7 @@ export function HouseholdProvider({
       items: items.data,
       me: {
         id: user.uid,
-        name: members[user.uid]?.name ?? user.displayName ?? 'Eu',
+        name: members[user.uid]?.name || user.displayName || '',
       },
       memberName: (userId) => (userId ? (members[userId]?.name ?? null) : null),
     }

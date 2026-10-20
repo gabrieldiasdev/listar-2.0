@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { groupBySection, suggestSection } from './sections'
+import { defaultSections, groupBySection, suggestSection } from './sections'
+
+const brazilianHousehold = defaultSections('pt-BR')
+const portugueseHousehold = defaultSections('pt-PT')
 
 describe('suggestSection', () => {
   it.each([
@@ -17,8 +20,31 @@ describe('suggestSection', () => {
     ['Anti mofo', 'Limpeza'],
     ['Filtro de água', 'Utilidades'],
     ['Salgadinho', 'Outros'],
-  ])('%s → %s', (name, section) => {
-    expect(suggestSection(name)).toBe(section)
+  ])('pt-BR: %s → %s', (name, section) => {
+    expect(suggestSection(name, brazilianHousehold, 'pt-BR')).toBe(section)
+  })
+
+  it.each([
+    ['Fiambre', 'Charcutaria e lacticínios'],
+    ['Bacalhau', 'Talho e peixaria'],
+    ['Sumo de laranja', 'Bebidas'],
+    ['Lixívia', 'Limpeza'],
+    ['Champô', 'Higiene'],
+    ['Película aderente', 'Utilidades'],
+    ['Esparguete', 'Mercearia'],
+    ['Cereais', 'Pequeno-almoço e doces'],
+    ['Frutas', 'Frutas e legumes'],
+  ])('pt-PT: %s → %s', (name, section) => {
+    expect(suggestSection(name, portugueseHousehold, 'pt-PT')).toBe(section)
+  })
+
+  it('prefers the label the household already uses, whatever the current locale', () => {
+    expect(suggestSection('Frutas', brazilianHousehold, 'pt-PT')).toBe('Hortifruti')
+    expect(suggestSection('Frutas', portugueseHousehold, 'pt-BR')).toBe('Frutas e legumes')
+  })
+
+  it('falls back to the current locale label when the household has none of them', () => {
+    expect(suggestSection('Frutas', ['Mercearia'], 'pt-PT')).toBe('Frutas e legumes')
   })
 })
 

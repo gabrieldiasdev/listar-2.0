@@ -1,5 +1,6 @@
 import { Check, Pencil } from 'lucide-react'
 import { IconButton } from '@/components/ui/IconButton'
+import { useI18n } from '@/i18n/i18nContext'
 import { cn } from '@/lib/cn'
 import type { Item } from '../model'
 
@@ -11,6 +12,7 @@ interface ItemRowProps {
 }
 
 export function ItemRow({ item, requestedBy, onToggle, onEdit }: ItemRowProps) {
+  const { t } = useI18n()
   const details = [item.quantity, item.note].filter(Boolean).join(' · ')
 
   return (
@@ -40,14 +42,15 @@ export function ItemRow({ item, requestedBy, onToggle, onEdit }: ItemRowProps) {
               {details}
               {item.needed && requestedBy && (
                 <span className="text-slate-500">
-                  {details && ' · '}pedido por {requestedBy}
+                  {details && ' · '}
+                  {t.catalog.requestedBy(requestedBy)}
                 </span>
               )}
             </span>
           )}
         </span>
       </button>
-      <IconButton label={`Editar ${item.name}`} onClick={onEdit} className="mr-1">
+      <IconButton label={t.catalog.editItem(item.name)} onClick={onEdit} className="mr-1">
         <Pencil className="size-5" />
       </IconButton>
     </li>

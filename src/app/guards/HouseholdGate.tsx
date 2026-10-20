@@ -11,6 +11,7 @@ import {
   type FallbackStatus,
 } from '@/features/household/HouseholdProvider'
 import { useUserProfile } from '@/features/household/useUserProfile'
+import { useI18n } from '@/i18n/i18nContext'
 
 export function HouseholdGate() {
   const profile = useUserProfile()
@@ -33,6 +34,7 @@ export function HouseholdGate() {
 function HouseholdFallback({ status }: { status: FallbackStatus }) {
   const user = useCurrentUser()
   const write = useBackgroundWrite()
+  const { t } = useI18n()
 
   if (status === 'loading') return <FullScreenLoader />
 
@@ -41,11 +43,11 @@ function HouseholdFallback({ status }: { status: FallbackStatus }) {
     return (
       <EmptyState
         icon={CloudOff}
-        title="Algo deu errado"
-        description="Não foi possível carregar a lista agora. Verifique a internet e tente de novo."
+        title={t.access.errorTitle}
+        description={t.access.errorDescription}
         action={
           <Button size="lg" onClick={() => window.location.reload()}>
-            Tentar de novo
+            {t.access.retry}
           </Button>
         }
       />
@@ -55,11 +57,11 @@ function HouseholdFallback({ status }: { status: FallbackStatus }) {
   return (
     <EmptyState
       icon={Lock}
-      title="Você não tem acesso a essa lista"
-      description="Talvez você tenha sido removido dela. Crie uma nova ou peça um convite."
+      title={t.access.deniedTitle}
+      description={t.access.deniedDescription}
       action={
         <Button onClick={() => write(setActiveHousehold(user.uid, null))}>
-          Continuar
+          {t.common.continue}
         </Button>
       }
     />

@@ -1,6 +1,7 @@
 import { House, ShoppingCart, type LucideIcon } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 import { useHousehold } from '@/features/household/householdContext'
+import { useI18n } from '@/i18n/i18nContext'
 import { cn } from '@/lib/cn'
 
 interface Tab {
@@ -12,11 +13,12 @@ interface Tab {
 
 export function AppLayout() {
   const { items } = useHousehold()
+  const { t } = useI18n()
   const neededCount = items.filter((item) => item.needed).length
 
   const tabs: Tab[] = [
-    { to: '/casa', label: 'Casa', icon: House },
-    { to: '/mercado', label: 'Mercado', icon: ShoppingCart, badge: neededCount },
+    { to: '/casa', label: t.nav.home, icon: House },
+    { to: '/mercado', label: t.nav.shopping, icon: ShoppingCart, badge: neededCount },
   ]
 
   return (
@@ -26,7 +28,7 @@ export function AppLayout() {
       </main>
 
       <nav
-        aria-label="Navegação principal"
+        aria-label={t.nav.label}
         className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="mx-auto flex max-w-2xl">
