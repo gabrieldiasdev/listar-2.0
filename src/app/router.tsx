@@ -5,11 +5,13 @@ import { OnboardingPage } from '@/features/household/OnboardingPage'
 import { SettingsPage } from '@/features/household/SettingsPage'
 import { CatalogPage } from '@/features/items/CatalogPage'
 import { ShoppingPage } from '@/features/shopping/ShoppingPage'
+import { HomeRoute } from './guards/HomeRoute'
 import { HouseholdGate } from './guards/HouseholdGate'
 import { RequireAuth } from './guards/RequireAuth'
 import { AppLayout } from './layouts/AppLayout'
 
 export const router = createBrowserRouter([
+  { path: '/', element: <HomeRoute /> },
   { path: '/login', element: <LoginPage /> },
   {
     element: <RequireAuth />,
@@ -22,7 +24,6 @@ export const router = createBrowserRouter([
           {
             element: <AppLayout />,
             children: [
-              { index: true, element: <Navigate to="/casa" replace /> },
               { path: '/casa', element: <CatalogPage /> },
               { path: '/mercado', element: <ShoppingPage /> },
             ],
