@@ -1,0 +1,121 @@
+import {
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  writeBatch,
+  type FirestoreDataConverter,
+} from 'firebase/firestore'
+import { db } from '@/lib/firebase'
+import { readSnapshot, toDate } from '@/lib/firestore'
+import { capitalize } from '@/lib/text'
+import type { Subscribe } from '@/lib/useSubscription'
+import type { Item, ItemDraft } from './model'
+
+type ItemFields = Omit<Item, 'id' | 'updatedAt'>
+
+const itemConverter: FirestoreDataConverter<Item> = {
+  toFirestore: ({ id: _id, updatedAt: _updatedAt, ...data }) => data,
+  fromFirestore: (snapshot, options) => {
+    const data = readSnapshot(snapshot, options)
+    return {
+      id: snapshot.id,
+      name: data.name,
+      section: data.section,
+      needed: data.needed ?? false,
+      quantity: data.quantity ?? '',
+      note: data.note ?? '',
+      inCart: data.inCart ?? false,
+      flaggedBy: data.flaggedBy ?? null,
+      updatedAt: toDate(data.updatedAt),
+    }
+  },
+}
+
+const itemsRef = (householdId: string) => collection(db, 'households', householdId, 'items')
+const itemRef = (householdId: string, itemId: string) => doc(itemsRef(householdId), itemId)
+
+function draftToFields(draft: ItemDraft, userId: string): ItemFields {
+  const needed = draft.needed ?? false
+  return {
+    name: capitalize(draft.name.trim()),
+    section: draft.section,
+    note: draft.note?.trim() ?? '',
+    quantity: draft.quantity?.trim() ?? '',
+    needed,
+    inCart: false,
+    flaggedBy: needed ? userId : null,
+  }
+}
+
+export function subscribeItems(householdId: string): Subscribe<Item[]> {
+  return (onData, onError) =>
+    onSnapshot(
+      itemsRef(householdId).withConverter(itemConverter),
+      (snapshot) => onData(snapshot.docs.map((d) => d.data())),
+      onError,
+    )
+}
+
+/*
+ * Writes are not awaited by the UI: with the persistent cache they apply locally at once
+ * and their promise only settles when the server acknowledges, which never happens offline.
+ */
+
+export function addItem(householdId: string, draft: ItemDraft, userId: string) {
+  return setDoc(doc(itemsRef(householdId)), { ...draftToFields(draft, userId), updatedAt: serverTimestamp() })
+}
+
+export function importItems(householdId: string, drafts: ItemDraft[], userId: string) {
+  const batch = writeBatch(db)
+  for (const draft of drafts) {
+    batch.set(doc(itemsRef(householdId)), { ...draftToFields(draft, userId), updatedAt: serverTimestamp() })
+  }
+  return batch.commit()
+}
+
+export function updateItem(householdId: string, itemId: string, changes: Partial<ItemFields>) {
+  return updateDoc(itemRef(householdId, itemId), { ...changes, updatedAt: serverTimestamp() })
+}
+
+export function deleteItem(householdId: string, itemId: string) {
+  return deleteDoc(itemRef(householdId, itemId))
+}
+
+export function setNeeded(householdId: string, itemId: string, needed: boolean, userId: string) {
+  return updateItem(
+    householdId,
+    itemId,
+    needed ? { needed, flaggedBy: userId } : { needed, flaggedBy: null, inCart: false, quantity: '' },
+  )
+}
+
+export function setInCart(householdId: string, itemId: string, inCart: boolean) {
+  return updateItem(householdId, itemId, { inCart })
+}
+
+/** Takes the bought items off the list atomically. Items left out of the cart stay flagged. */
+export function finishShopping(householdId: string, cartItems: Item[]) {
+  const batch = writeBatch(db)
+  for (const item of cartItems) {
+    batch.update(itemRef(householdId, item.id), {
+      needed: false,
+      inCart: false,
+      quantity: '',
+      flaggedBy: null,
+      updatedAt: serverTimestamp(),
+    })
+  }
+  return batch.commit()
+}
+
+export function restoreItems(householdId: string, items: Item[]) {
+  const batch = writeBatch(db)
+  for (const item of items) {
+    batch.set(itemRef(householdId, item.id).withConverter(itemConverter), item)
+  }
+  return batch.commit()
+}

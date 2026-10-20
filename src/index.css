@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+}
+
+@layer base {
+  /* Scales every rem-based size up ~12% for easier reading and bigger touch targets. */
+  html {
+    font-size: 112.5%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .sheet {
+    @apply m-0 mt-auto w-full max-w-none rounded-t-3xl bg-white p-0 shadow-2xl;
+    max-height: 90dvh;
+  }
+
+  .sheet::backdrop {
+    @apply bg-slate-900/50;
+  }
+
+  @media (min-width: 640px) {
+    .sheet {
+      @apply mx-auto mb-auto max-w-lg rounded-3xl;
+    }
+  }
+}
