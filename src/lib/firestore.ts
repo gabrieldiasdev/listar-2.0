@@ -1,4 +1,9 @@
+import { FirebaseError } from 'firebase/app'
 import { Timestamp, type DocumentData, type QueryDocumentSnapshot, type SnapshotOptions } from 'firebase/firestore'
+
+export function isPermissionDenied(error: unknown): boolean {
+  return error instanceof FirebaseError && error.code === 'permission-denied'
+}
 
 export function toDate(value: unknown): Date | null {
   return value instanceof Timestamp ? value.toDate() : null

@@ -1,6 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { useCurrentUser } from '@/features/auth/authContext'
 import { subscribeItems } from '@/features/items/itemsRepository'
+import { isPermissionDenied } from '@/lib/firestore'
 import { useSubscription } from '@/lib/useSubscription'
 import {
   HouseholdContext,
@@ -8,7 +9,11 @@ import {
 } from './householdContext'
 import { subscribeHousehold } from './householdRepository'
 
-type FallbackStatus = 'loading' | 'unavailable'
+/**
+ * `unavailable`: the user is not a member (or the household is gone).
+ * `error`: anything else, e.g. a transient failure or an outdated client; membership is untouched.
+ */
+export type FallbackStatus = 'loading' | 'unavailable' | 'error'
 
 interface HouseholdProviderProps {
   householdId: string
@@ -55,10 +60,11 @@ export function HouseholdProvider({
     }
   }, [household, items.data, user.uid, user.displayName])
 
-  const failed = snapshot.error ?? items.error
-  if (failed || (!snapshot.loading && household === null)) {
+  const householdMissing = !snapshot.loading && household === null
+  if (isPermissionDenied(snapshot.error) || householdMissing) {
     return fallback('unavailable')
   }
+  if (snapshot.error || items.error) return fallback('error')
   if (!value) return fallback('loading')
 
   return <HouseholdContext value={value}>{children}</HouseholdContext>
