@@ -27,7 +27,7 @@ export function SettingsPage() {
   }
 
   return (
-    <>
+    <div className="mx-auto max-w-2xl pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <PageHeader
         title="Ajustes"
         actions={
@@ -88,7 +88,7 @@ export function SettingsPage() {
           </Button>
         </SettingsSection>
       </div>
-    </>
+    </div>
   )
 }
 
