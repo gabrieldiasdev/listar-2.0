@@ -204,3 +204,47 @@ describe('leaving a household', () => {
     await assertFails(getDocs(collection(db, 'households')))
   })
 })
+
+describe('data limits', () => {
+  const item = (id: string) => doc(asUser('dad'), 'households', HOUSEHOLD, 'items', id)
+  const validItem = { name: 'Sal', section: 'Mercearia', needed: true, quantity: '', note: '', inCart: false, flaggedBy: 'dad' }
+
+  it('accepts a complete, well-formed item', async () => {
+    await assertSucceeds(setDoc(item('ok'), validItem))
+  })
+
+  it('rejects unknown fields and oversized text on items', async () => {
+    await assertFails(setDoc(item('extra'), { ...validItem, payload: 'x' }))
+    await assertFails(setDoc(item('note'), { ...validItem, note: 'x'.repeat(61) }))
+    await assertFails(setDoc(item('name'), { ...validItem, name: 'x'.repeat(81) }))
+    await assertFails(setDoc(item('section'), { ...validItem, section: '' }))
+    await assertFails(setDoc(item('cart'), { ...validItem, inCart: 'yes' }))
+  })
+
+  it('rejects unknown fields and too many sections on households', async () => {
+    const dad = asUser('dad')
+    await assertFails(updateDoc(household(dad), { payload: 'x' }))
+    await assertFails(updateDoc(household(dad), { sections: Array.from({ length: 41 }, (_, i) => `S${i}`) }))
+    await assertSucceeds(updateDoc(household(dad), { sections: Array.from({ length: 40 }, (_, i) => `S${i}`) }))
+  })
+
+  it('stops joining once a household has 20 members', async () => {
+    const full = Array.from({ length: 20 }, (_, i) => `member${i}`)
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(household(context.firestore() as unknown as Firestore), { memberIds: full }),
+    )
+    await assertFails(
+      updateDoc(household(asUser('mom')), {
+        memberIds: arrayUnion('mom'),
+        'members.mom': { name: 'Mãe', photoURL: null },
+        joinCode: INVITE,
+      }),
+    )
+  })
+
+  it('only stores the active list in user profiles', async () => {
+    const profile = doc(asUser('dad'), 'users', 'dad')
+    await assertSucceeds(setDoc(profile, { activeHouseholdId: null }))
+    await assertFails(setDoc(profile, { activeHouseholdId: HOUSEHOLD, nickname: 'x' }))
+  })
+})

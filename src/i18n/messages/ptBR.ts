@@ -180,6 +180,13 @@ export const ptBR = {
     back: 'Voltar',
     updated: (date: string) => `Última atualização: ${date}`,
   },
+  recaptcha: {
+    before: 'Este site é protegido pelo reCAPTCHA e se aplicam a ',
+    privacy: 'Política de Privacidade',
+    middle: ' e os ',
+    terms: 'Termos de Serviço',
+    after: ' do Google.',
+  },
 }
 
 export type Messages = typeof ptBR

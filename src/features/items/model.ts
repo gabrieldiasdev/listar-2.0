@@ -1,3 +1,6 @@
+/** Text limits, also enforced by firestore.rules. */
+export const ITEM_LIMITS = { name: 80, section: 40, quantity: 40, note: 60 } as const
+
 export interface Item {
   id: string
   name: string

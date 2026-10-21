@@ -26,6 +26,11 @@
   body {
     @apply bg-slate-50 text-slate-900 antialiased;
   }
+
+  /* Hidden because it covers the floating buttons; RecaptchaNotice provides the required attribution. */
+  .grecaptcha-badge {
+    visibility: hidden;
+  }
 }
 
 @layer components {

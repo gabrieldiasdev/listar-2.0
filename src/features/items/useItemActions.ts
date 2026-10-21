@@ -23,20 +23,8 @@ export function useItemActions() {
 
       importMany: (drafts: ItemDraft[]) => write(repository.importItems(householdId, drafts, me.id)),
 
-      update: (item: Item, draft: ItemDraft) => {
-        const needed = draft.needed ?? item.needed
-        write(
-          repository.updateItem(householdId, item.id, {
-            name: draft.name.trim(),
-            section: draft.section,
-            note: draft.note?.trim() ?? '',
-            quantity: needed ? (draft.quantity?.trim() ?? '') : '',
-            needed,
-            inCart: needed && item.inCart,
-            flaggedBy: needed ? (item.needed ? item.flaggedBy : me.id) : null,
-          }),
-        )
-      },
+      update: (item: Item, draft: ItemDraft) =>
+        write(repository.updateItemFromDraft(householdId, item, draft, me.id)),
 
       remove: (item: Item) => {
         write(repository.deleteItem(householdId, item.id))

@@ -23,26 +23,28 @@ const ptPT: LegalDocument = {
         'O conteúdo que cria: o nome da lista, os produtos, quantidades, notas, secções e quem marcou cada produto.',
         'As listas de que faz parte e quem as criou.',
         'No seu dispositivo, e apenas lá: o idioma escolhido e uma cópia da lista para funcionar sem rede.',
+        'Sinais técnicos do navegador e do dispositivo, analisados pelo reCAPTCHA da Google para confirmar que os pedidos vêm da aplicação verdadeira e não de programas automáticos.',
       ],
       paragraphs: ['Não recolhemos a sua localização, contactos, dados de pagamento nem dados para publicidade.'],
     },
     {
       heading: 'Para que usamos os dados',
       paragraphs: [
-        'Apenas para prestar o serviço: identificar a sua conta, guardar e sincronizar a lista entre os membros da casa e mostrar quem pediu cada produto. Não vendemos dados, não os partilhamos para publicidade e o Listar não tem anúncios.',
+        'Apenas para prestar o serviço e protegê-lo: identificar a sua conta, guardar e sincronizar a lista entre os membros da casa, mostrar quem pediu cada produto e impedir abusos automáticos. Não vendemos dados, não os partilhamos para publicidade e o Listar não tem anúncios.',
       ],
     },
     {
       heading: 'Fundamento legal',
       paragraphs: [
         'O tratamento é necessário para executar o serviço que pediu ao criar a conta (artigo 6.º, n.º 1, alínea b), do Regulamento Geral sobre a Proteção de Dados).',
+        'A proteção contra abusos com o reCAPTCHA assenta no nosso interesse legítimo em manter o serviço seguro e disponível para todos (alínea f) do mesmo artigo).',
       ],
     },
     {
       heading: 'Quem tem acesso aos dados',
       bullets: [
         'Os membros da mesma lista veem o seu primeiro nome, a sua fotografia e o conteúdo da lista.',
-        'A Google, através do Firebase, aloja o serviço por nossa conta. A base de dados fica na União Europeia (Madrid, Espanha). A autenticação usa o Firebase Authentication, que pode tratar dados fora da UE; nesse caso a Google aplica as garantias previstas no RGPD, como o Quadro de Privacidade de Dados UE-EUA e cláusulas contratuais-tipo.',
+        'A Google, através do Firebase, aloja o serviço por nossa conta. A base de dados fica na União Europeia (Madrid, Espanha). A autenticação usa o Firebase Authentication e a proteção contra abusos usa o reCAPTCHA, que podem tratar dados fora da UE; nesse caso a Google aplica as garantias previstas no RGPD, como o Quadro de Privacidade de Dados UE-EUA e cláusulas contratuais-tipo. O reCAPTCHA está sujeito à Política de Privacidade e aos Termos de Utilização da Google.',
       ],
     },
     {
@@ -62,7 +64,7 @@ const ptPT: LegalDocument = {
     {
       heading: 'Cookies e armazenamento local',
       paragraphs: [
-        'O Listar não usa cookies de publicidade nem de análise. Guarda no dispositivo apenas o que é necessário para funcionar: a sessão iniciada, a cópia da lista para uso sem rede e a preferência de idioma. Por isso não mostramos um aviso de cookies.',
+        'O Listar não usa cookies de publicidade nem de análise. Guarda no dispositivo apenas o que é necessário para funcionar: a sessão iniciada, a cópia da lista para uso sem rede e a preferência de idioma. O reCAPTCHA pode guardar um cookie técnico de segurança. Como todos são estritamente necessários, não mostramos um aviso de cookies.',
       ],
     },
     {
@@ -97,26 +99,28 @@ const ptBR: LegalDocument = {
         'O conteúdo que você cria: o nome da lista, os itens, quantidades, observações, seções e quem marcou cada item.',
         'As listas de que você faz parte e quem as criou.',
         'No seu aparelho, e apenas nele: o idioma escolhido e uma cópia da lista para funcionar sem internet.',
+        'Sinais técnicos do navegador e do aparelho, analisados pelo reCAPTCHA do Google para confirmar que os pedidos vêm do aplicativo verdadeiro e não de programas automáticos.',
       ],
       paragraphs: ['Não coletamos sua localização, contatos, dados de pagamento nem dados para publicidade.'],
     },
     {
       heading: 'Para que usamos os dados',
       paragraphs: [
-        'Somente para prestar o serviço: identificar sua conta, guardar e sincronizar a lista entre os membros da casa e mostrar quem pediu cada item. Não vendemos dados, não compartilhamos para publicidade e o Listar não tem anúncios.',
+        'Somente para prestar o serviço e protegê-lo: identificar sua conta, guardar e sincronizar a lista entre os membros da casa, mostrar quem pediu cada item e impedir abusos automáticos. Não vendemos dados, não compartilhamos para publicidade e o Listar não tem anúncios.',
       ],
     },
     {
       heading: 'Base legal',
       paragraphs: [
         'O tratamento é necessário para executar o serviço que você pediu ao criar a conta (art. 7º, V, da Lei Geral de Proteção de Dados e art. 6º, 1, b, do Regulamento Geral sobre a Proteção de Dados europeu).',
+        'A proteção contra abusos com o reCAPTCHA se baseia no nosso legítimo interesse em manter o serviço seguro e disponível para todos (art. 7º, IX, da LGPD).',
       ],
     },
     {
       heading: 'Quem tem acesso aos dados',
       bullets: [
         'Os membros da mesma lista veem seu primeiro nome, sua foto e o conteúdo da lista.',
-        'O Google, por meio do Firebase, hospeda o serviço em nosso nome. O banco de dados fica na União Europeia (Madri, Espanha). O login usa o Firebase Authentication, que pode tratar dados em outros países, com as garantias contratuais exigidas pela legislação de proteção de dados.',
+        'O Google, por meio do Firebase, hospeda o serviço em nosso nome. O banco de dados fica na União Europeia (Madri, Espanha). O login usa o Firebase Authentication e a proteção contra abusos usa o reCAPTCHA, que podem tratar dados em outros países, com as garantias contratuais exigidas pela legislação de proteção de dados. O reCAPTCHA está sujeito à Política de Privacidade e aos Termos de Serviço do Google.',
       ],
     },
     {
@@ -136,7 +140,7 @@ const ptBR: LegalDocument = {
     {
       heading: 'Cookies e armazenamento local',
       paragraphs: [
-        'O Listar não usa cookies de publicidade nem de análise. Guarda no aparelho apenas o necessário para funcionar: a sessão iniciada, a cópia da lista para uso sem internet e a preferência de idioma. Por isso não mostramos aviso de cookies.',
+        'O Listar não usa cookies de publicidade nem de análise. Guarda no aparelho apenas o necessário para funcionar: a sessão iniciada, a cópia da lista para uso sem internet e a preferência de idioma. O reCAPTCHA pode guardar um cookie técnico de segurança. Como todos são estritamente necessários, não mostramos aviso de cookies.',
       ],
     },
     {

@@ -17,6 +17,7 @@ import { LeaveListSheet } from './components/LeaveListSheet'
 import { SectionsEditor } from './components/SectionsEditor'
 import { renameHousehold } from './householdRepository'
 import { useHousehold } from './householdContext'
+import { HOUSEHOLD_LIMITS } from './model'
 
 export function SettingsPage() {
   const navigate = useNavigate()
@@ -74,7 +75,7 @@ export function SettingsPage() {
           <TextField
             label={t.settings.listName}
             value={name}
-            maxLength={60}
+            maxLength={HOUSEHOLD_LIMITS.name}
             onChange={(event) => setName(event.target.value)}
             onBlur={commitName}
             onKeyDown={(event) => event.key === 'Enter' && event.currentTarget.blur()}

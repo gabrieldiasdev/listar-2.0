@@ -27,8 +27,29 @@ service cloud.firestore {
       return value is string && value.size() > 0 && value.size() <= maxSize;
     }
 
+    function isOptionalString(data, key, maxSize) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxSize);
+    }
+
+    // Limits mirror the client (src/features/items/model.ts, src/features/household/model.ts).
+    function isValidItem(data) {
+      return data.keys().hasOnly(['name', 'section', 'needed', 'quantity', 'note', 'inCart', 'flaggedBy', 'updatedAt'])
+        && isNonEmptyString(data.name, 80)
+        && isNonEmptyString(data.section, 40)
+        && data.needed is bool
+        && isOptionalString(data, 'quantity', 40)
+        && isOptionalString(data, 'note', 60)
+        && (!('inCart' in data) || data.inCart is bool)
+        && (!('flaggedBy' in data) || data.flaggedBy == null || isNonEmptyString(data.flaggedBy, 128))
+        && (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
     match /users/{userId} {
-      allow read, write: if signedIn() && uid() == userId;
+      allow read, delete: if signedIn() && uid() == userId;
+      allow create, update: if signedIn() && uid() == userId
+        && request.resource.data.keys().hasOnly(['activeHouseholdId'])
+        && (request.resource.data.activeHouseholdId == null
+          || isNonEmptyString(request.resource.data.activeHouseholdId, 64));
     }
 
     match /households/{householdId} {
@@ -41,8 +62,13 @@ service cloud.firestore {
       }
 
       function isValidHousehold(data) {
-        return isNonEmptyString(data.name, 60)
+        return data.keys().hasOnly(['name', 'ownerId', 'memberIds', 'members', 'sections', 'inviteCode', 'joinCode', 'createdAt'])
+          && isNonEmptyString(data.name, 60)
           && data.sections is list
+          && data.sections.size() <= 40
+          && data.memberIds is list
+          && data.memberIds.size() <= 20
+          && data.members is map
           && isNonEmptyString(data.inviteCode, 64);
       }
 
@@ -75,6 +101,7 @@ service cloud.firestore {
           && changedKeys().hasOnly(['memberIds', 'members', 'joinCode'])
           && after.joinCode == before.inviteCode
           && after.memberIds.size() == before.memberIds.size() + 1
+          && after.memberIds.size() <= 20
           && after.memberIds.toSet() == before.memberIds.toSet().union([uid()].toSet())
           && after.members.diff(before.members).affectedKeys().hasOnly([uid()]);
       }
@@ -91,9 +118,7 @@ service cloud.firestore {
 
       match /items/{itemId} {
         allow read, delete: if isMemberOf(householdId);
-        allow create, update: if isMemberOf(householdId)
-          && isNonEmptyString(request.resource.data.name, 80)
-          && request.resource.data.needed is bool;
+        allow create, update: if isMemberOf(householdId) && isValidItem(request.resource.data);
       }
     }
   }

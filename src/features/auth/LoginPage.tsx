@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router'
+import { RecaptchaNotice } from '@/components/RecaptchaNotice'
 import { Button } from '@/components/ui/Button'
 import { FullScreenLoader } from '@/components/ui/Spinner'
 import { site } from '@/config/site'
@@ -59,6 +60,8 @@ export function LoginPage() {
         </Link>
         {t.auth.legalNotice.after}
       </p>
+
+      <RecaptchaNotice />
 
       {error && (
         <p role="alert" className="text-red-700">

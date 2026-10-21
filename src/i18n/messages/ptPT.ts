@@ -181,4 +181,11 @@ export const ptPT: Messages = {
     back: 'Voltar',
     updated: (date: string) => `Última atualização: ${date}`,
   },
+  recaptcha: {
+    before: 'Este site está protegido pelo reCAPTCHA e aplicam-se a ',
+    privacy: 'Política de Privacidade',
+    middle: ' e os ',
+    terms: 'Termos de Utilização',
+    after: ' da Google.',
+  },
 }
