@@ -47,6 +47,8 @@ npx firebase login       # uma vez
 npm run deploy           # build + hosting + regras/índices do Firestore
 ```
 
+O app roda no projeto `listar-2-eu`, com o Firestore em `europe-southwest1` (Madrid).
+
 ## Arquitetura
 
 ```
