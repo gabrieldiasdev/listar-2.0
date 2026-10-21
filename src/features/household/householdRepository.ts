@@ -1,12 +1,17 @@
 import {
   arrayUnion,
   collection,
+  deleteDoc,
+  deleteField,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
   writeBatch,
   type FirestoreDataConverter,
 } from 'firebase/firestore'
@@ -122,6 +127,42 @@ export function renameHousehold(householdId: string, name: string) {
 
 export function updateSections(householdId: string, sections: string[]) {
   return updateDoc(householdRef(householdId), { sections })
+}
+
+export async function listMemberHouseholds(userId: string): Promise<Household[]> {
+  const snapshot = await getDocs(query(householdsRef, where('memberIds', 'array-contains', userId)))
+  return snapshot.docs.map((d) => d.data())
+}
+
+const DELETE_BATCH_LIMIT = 400
+
+/** Items must go first: their rules check membership through the household document. */
+async function deleteHouseholdWithItems(householdId: string) {
+  const items = await getDocs(collection(db, 'households', householdId, 'items'))
+  for (let start = 0; start < items.docs.length; start += DELETE_BATCH_LIMIT) {
+    const batch = writeBatch(db)
+    for (const item of items.docs.slice(start, start + DELETE_BATCH_LIMIT)) batch.delete(item.ref)
+    await batch.commit()
+  }
+  await deleteDoc(householdRef(householdId))
+}
+
+/** Removes the user from the household, handing ownership on, or deletes it when they are the last member. */
+export async function leaveHousehold(household: Household, userId: string) {
+  const remaining = household.memberIds.filter((id) => id !== userId)
+  if (remaining.length === 0) {
+    await deleteHouseholdWithItems(household.id)
+    return
+  }
+  await updateDoc(doc(db, 'households', household.id), {
+    memberIds: remaining,
+    [`members.${userId}`]: deleteField(),
+    ...(household.ownerId === userId && { ownerId: remaining[0] }),
+  })
+}
+
+export function deleteUserProfile(userId: string) {
+  return deleteDoc(userRef(userId))
 }
 
 export function buildInviteLink(household: Pick<Household, 'id' | 'inviteCode'>): string {

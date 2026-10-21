@@ -1,11 +1,7 @@
-import { lazy, Suspense } from 'react'
 import { Navigate } from 'react-router'
 import { FullScreenLoader } from '@/components/ui/Spinner'
 import { useAuth } from '@/features/auth/authContext'
-
-const LandingPage = lazy(() =>
-  import('@/features/landing/LandingPage').then((module) => ({ default: module.LandingPage })),
-)
+import { LazyLandingPage } from '../lazyPages'
 
 /** Visitors see the landing page; signed-in users (e.g. the installed app) go straight to their list. */
 export function HomeRoute() {
@@ -13,10 +9,5 @@ export function HomeRoute() {
 
   if (loading) return <FullScreenLoader />
   if (user) return <Navigate to="/casa" replace />
-
-  return (
-    <Suspense fallback={<FullScreenLoader />}>
-      <LandingPage />
-    </Suspense>
-  )
+  return <LazyLandingPage />
 }

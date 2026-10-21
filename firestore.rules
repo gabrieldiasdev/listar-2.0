@@ -50,7 +50,20 @@ service cloud.firestore {
         return isMember()
           && !changedKeys().hasAny(['ownerId', 'joinCode'])
           && (isOwner() || !changedKeys().hasAny(['memberIds', 'members']))
+          && uid() in request.resource.data.memberIds
           && isValidHousehold(request.resource.data);
+      }
+
+      // A member may remove only themselves; an owner leaving must hand ownership to a remaining member.
+      function isLeaving() {
+        let before = resource.data;
+        let after = request.resource.data;
+        return isMember()
+          && changedKeys().hasOnly(['memberIds', 'members', 'ownerId'])
+          && after.memberIds.size() == before.memberIds.size() - 1
+          && after.memberIds.toSet() == before.memberIds.toSet().difference([uid()].toSet())
+          && before.members.diff(after.members).affectedKeys().hasOnly([uid()])
+          && (isOwner() ? after.ownerId in after.memberIds : after.ownerId == before.ownerId);
       }
 
       // A non-member may only append themselves, proving they hold the current invite code.
@@ -73,8 +86,8 @@ service cloud.firestore {
         && request.resource.data.memberIds == [uid()]
         && request.resource.data.members.keys().hasOnly([uid()])
         && isValidHousehold(request.resource.data);
-      allow update: if isMemberEdit() || isJoining();
-      allow delete: if isOwner();
+      allow update: if isMemberEdit() || isJoining() || isLeaving();
+      allow delete: if isOwner() || (isMember() && resource.data.memberIds.size() == 1);
 
       match /items/{itemId} {
         allow read, delete: if isMemberOf(householdId);

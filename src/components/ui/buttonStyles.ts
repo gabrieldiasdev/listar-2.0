@@ -5,6 +5,7 @@ const variants = {
   secondary: 'bg-white text-slate-800 ring-1 ring-slate-300 active:bg-slate-100',
   ghost: 'text-brand-800 active:bg-brand-50',
   danger: 'bg-white text-red-700 ring-1 ring-red-300 active:bg-red-50',
+  destructive: 'bg-red-700 text-white active:bg-red-800 disabled:bg-red-300',
 }
 
 const sizes = {

@@ -5,7 +5,20 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { arrayUnion, doc, getDoc, setDoc, updateDoc, type Firestore } from 'firebase/firestore'
+import {
+  arrayUnion,
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+  type Firestore,
+} from 'firebase/firestore'
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest'
 
 const HOUSEHOLD = 'house-1'
@@ -138,5 +151,56 @@ describe('household subcollections', () => {
     const item = doc(asUser('dad'), 'households', HOUSEHOLD, 'items', 'bad')
     await assertFails(setDoc(item, { name: '', needed: false }))
     await assertFails(setDoc(item, { name: 'Sal', needed: 'yes' }))
+  })
+})
+
+describe('leaving a household', () => {
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(household(context.firestore() as unknown as Firestore), {
+        memberIds: ['dad', 'mom'],
+        'members.mom': { name: 'Mãe', photoURL: null },
+      }),
+    )
+  })
+
+  it('lets a member remove only themselves', async () => {
+    await assertSucceeds(updateDoc(household(asUser('mom')), { memberIds: ['dad'], 'members.mom': deleteField() }))
+  })
+
+  it('stops a member from removing someone else or taking ownership while leaving', async () => {
+    await assertFails(updateDoc(household(asUser('mom')), { memberIds: ['mom'], 'members.dad': deleteField() }))
+    await assertFails(
+      updateDoc(household(asUser('mom')), { memberIds: ['dad'], 'members.mom': deleteField(), ownerId: 'mom' }),
+    )
+  })
+
+  it('requires an owner who leaves to hand ownership to a remaining member', async () => {
+    const dad = asUser('dad')
+    await assertFails(updateDoc(household(dad), { memberIds: ['mom'], 'members.dad': deleteField() }))
+    await assertFails(
+      updateDoc(household(dad), { memberIds: ['mom'], 'members.dad': deleteField(), ownerId: 'stranger' }),
+    )
+    await assertSucceeds(
+      updateDoc(household(dad), { memberIds: ['mom'], 'members.dad': deleteField(), ownerId: 'mom' }),
+    )
+  })
+
+  it('lets only the owner or a sole member delete the household', async () => {
+    await assertFails(deleteDoc(household(asUser('mom'))))
+    await assertSucceeds(deleteDoc(household(asUser('dad'))))
+  })
+
+  it('lets a sole remaining member delete the household', async () => {
+    await env.withSecurityRulesDisabled((context) =>
+      updateDoc(household(context.firestore() as unknown as Firestore), { memberIds: ['mom'], ownerId: 'dad' }),
+    )
+    await assertSucceeds(deleteDoc(household(asUser('mom'))))
+  })
+
+  it('allows listing the households a user belongs to', async () => {
+    const db = asUser('mom')
+    await assertSucceeds(getDocs(query(collection(db, 'households'), where('memberIds', 'array-contains', 'mom'))))
+    await assertFails(getDocs(collection(db, 'households')))
   })
 })

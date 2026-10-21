@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { site } from '../site'
+import { site } from '@/config/site'
 import { useLandingContent } from '../useLandingContent'
 
 export function SiteHeader() {

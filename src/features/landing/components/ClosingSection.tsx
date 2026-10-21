@@ -1,7 +1,8 @@
+import { Link } from 'react-router'
+import { site } from '@/config/site'
 import { useI18n } from '@/i18n/i18nContext'
 import { LOCALES } from '@/i18n/locales'
 import { cn } from '@/lib/cn'
-import { site } from '../site'
 import { useLandingContent } from '../useLandingContent'
 import { CallToAction } from './CallToAction'
 
@@ -44,9 +45,17 @@ export function ClosingSection() {
                 </button>
               ))}
             </div>
-            <a href={`mailto:${site.contactEmail}`} className="font-medium text-slate-700 hover:text-brand-800">
-              {closing.contact}
-            </a>
+            <nav className="flex gap-5 font-medium text-slate-700">
+              <Link to={site.privacyPath} className="hover:text-brand-800">
+                {t.settings.privacyPolicy}
+              </Link>
+              <Link to={site.termsPath} className="hover:text-brand-800">
+                {t.settings.terms}
+              </Link>
+              <a href={`mailto:${site.contactEmail}`} className="hover:text-brand-800">
+                {closing.contact}
+              </a>
+            </nav>
           </div>
         </div>
       </footer>
