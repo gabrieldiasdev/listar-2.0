@@ -1,5 +1,6 @@
 // One-off copy of Auth users and all Firestore data from the old project to the new one.
-// Usage: node scripts/migrate-project.mjs [--apply]   (dry run without --apply)
+// Usage: node scripts/migrate-project.mjs [--apply] [--skip=<id>,<id>…]   (dry run without --apply)
+// --skip drops collections or documents whose id matches, together with everything below them.
 // Expects service account keys in .secrets/old.json and .secrets/new.json.
 import { readFileSync } from 'node:fs'
 import { cert, initializeApp } from 'firebase-admin/app'
@@ -7,6 +8,13 @@ import { getAuth } from 'firebase-admin/auth'
 import { getFirestore } from 'firebase-admin/firestore'
 
 const apply = process.argv.includes('--apply')
+const skipped = new Set(
+  process.argv
+    .find((arg) => arg.startsWith('--skip='))
+    ?.slice('--skip='.length)
+    .split(',')
+    .filter(Boolean) ?? [],
+)
 const BATCH_LIMIT = 400
 
 function connect(name) {
@@ -48,8 +56,10 @@ function toImportRecord(user) {
 /** Collects every document of the given collections and, recursively, their subcollections. */
 async function collectDocuments(collections, out = []) {
   for (const collection of collections) {
+    if (skipped.has(collection.id)) continue
     const snapshot = await collection.get()
     for (const doc of snapshot.docs) {
+      if (skipped.has(doc.id)) continue
       out.push({ path: doc.ref.path, data: doc.data() })
       await collectDocuments(await doc.ref.listCollections(), out)
     }

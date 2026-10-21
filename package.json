@@ -15,7 +15,6 @@
     "test:rules": "firebase emulators:exec --only firestore --project demo-listar \"vitest run --project rules\"",
     "generate-pwa-assets": "pwa-assets-generator",
     "deploy": "npm run build && firebase deploy --only hosting,firestore --project default",
-    "deploy:legacy-redirect": "firebase deploy --only hosting --config firebase.legacy.json --project legacy",
     "migrate:project": "node scripts/migrate-project.mjs"
   },
   "dependencies": {
