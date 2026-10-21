@@ -47,6 +47,11 @@ npx firebase login       # uma vez
 npm run deploy           # build + hosting + regras/índices do Firestore
 ```
 
+O app roda no projeto `listar-2-eu` (Firestore em `europe-southwest1`, Madrid). O projeto antigo,
+`listar-2-5fed2`, serve apenas `legacy-redirect/`: um service worker que se desinstala e uma página que
+redireciona para o endereço novo mantendo o caminho, para que apps instalados e links de convite antigos
+continuem a funcionar (`npm run deploy:legacy-redirect`).
+
 ## Arquitetura
 
 ```
