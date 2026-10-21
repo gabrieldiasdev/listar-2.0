@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useToast } from '@/components/toast/toastContext'
 import { useBackgroundWrite } from '@/components/toast/useBackgroundWrite'
 import { useHousehold } from '@/features/household/householdContext'
+import { useI18n } from '@/i18n/i18nContext'
 import * as repository from './itemsRepository'
 import type { Item, ItemDraft } from './model'
 
@@ -9,6 +10,7 @@ export function useItemActions() {
   const { household, me } = useHousehold()
   const write = useBackgroundWrite()
   const toast = useToast()
+  const { t } = useI18n()
   const householdId = household.id
 
   return useMemo(
@@ -39,20 +41,19 @@ export function useItemActions() {
       remove: (item: Item) => {
         write(repository.deleteItem(householdId, item.id))
         toast({
-          message: `"${item.name}" excluído`,
-          action: { label: 'Desfazer', onAction: () => write(repository.restoreItems(householdId, [item])) },
+          message: t.editor.deleted(item.name),
+          action: { label: t.common.undo, onAction: () => write(repository.restoreItems(householdId, [item])) },
         })
       },
 
       finishShopping: (cartItems: Item[]) => {
         write(repository.finishShopping(householdId, cartItems))
-        const count = cartItems.length
         toast({
-          message: `Compra finalizada! ${count} ${count === 1 ? 'item saiu' : 'itens saíram'} da lista.`,
-          action: { label: 'Desfazer', onAction: () => write(repository.restoreItems(householdId, cartItems)) },
+          message: t.shopping.finished(cartItems.length),
+          action: { label: t.common.undo, onAction: () => write(repository.restoreItems(householdId, cartItems)) },
         })
       },
     }),
-    [householdId, me.id, write, toast],
+    [householdId, me.id, write, toast, t],
   )
 }

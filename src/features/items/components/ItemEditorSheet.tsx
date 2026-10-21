@@ -6,10 +6,11 @@ import { Sheet } from '@/components/ui/Sheet'
 import { Switch } from '@/components/ui/Switch'
 import { TextField } from '@/components/ui/TextField'
 import { useHousehold } from '@/features/household/householdContext'
+import { useI18n } from '@/i18n/i18nContext'
 import { normalizeText } from '@/lib/text'
 import type { Item, ItemDraft } from '../model'
-import { suggestSection } from '../sections'
 import { useItemActions } from '../useItemActions'
+import { useSuggestSection } from '../useSuggestSection'
 
 export type EditorTarget = { mode: 'create'; name?: string } | { mode: 'edit'; item: Item }
 
@@ -19,14 +20,19 @@ interface ItemEditorSheetProps {
 }
 
 export function ItemEditorSheet({ target, onClose }: ItemEditorSheetProps) {
+  const { t } = useI18n()
   return (
-    <Sheet open={target !== null} onClose={onClose} title={target?.mode === 'edit' ? 'Editar item' : 'Novo item'}>
+    <Sheet
+      open={target !== null}
+      onClose={onClose}
+      title={target?.mode === 'edit' ? t.editor.editTitle : t.editor.createTitle}
+    >
       {target && <ItemEditorForm key={target.mode === 'edit' ? target.item.id : 'new'} target={target} onDone={onClose} />}
     </Sheet>
   )
 }
 
-function initialDraft(target: EditorTarget): Required<ItemDraft> {
+function initialDraft(target: EditorTarget, suggestSection: (name: string) => string): Required<ItemDraft> {
   if (target.mode === 'edit') {
     const { name, section, note, quantity, needed } = target.item
     return { name, section, note, quantity, needed }
@@ -38,7 +44,9 @@ function initialDraft(target: EditorTarget): Required<ItemDraft> {
 function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () => void }) {
   const { household, items } = useHousehold()
   const actions = useItemActions()
-  const [draft, setDraft] = useState(() => initialDraft(target))
+  const suggestSection = useSuggestSection()
+  const { t } = useI18n()
+  const [draft, setDraft] = useState(() => initialDraft(target, suggestSection))
   const [sectionTouched, setSectionTouched] = useState(target.mode === 'edit')
 
   const sections = household.sections.includes(draft.section) ? household.sections : [...household.sections, draft.section]
@@ -71,21 +79,21 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <TextField
-        label="Nome"
+        label={t.editor.name}
         value={draft.name}
         onChange={(event) => handleNameChange(event.target.value)}
         maxLength={80}
         required
         autoFocus={target.mode === 'create' && !target.name}
-        hint={duplicate ? `Já existe "${duplicate.name}" na lista.` : undefined}
+        hint={duplicate ? t.editor.duplicate(duplicate.name) : undefined}
       />
 
-      <Switch label="Precisa comprar" checked={draft.needed} onChange={(needed) => update({ needed })} />
+      <Switch label={t.editor.needed} checked={draft.needed} onChange={(needed) => update({ needed })} />
 
       {draft.needed && (
         <TextField
-          label="Quanto comprar? (opcional)"
-          placeholder="Ex.: 2 pacotes"
+          label={t.editor.quantity}
+          placeholder={t.editor.quantityPlaceholder}
           value={draft.quantity}
           onChange={(event) => update({ quantity: event.target.value })}
           maxLength={40}
@@ -93,15 +101,15 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
       )}
 
       <TextField
-        label="Observação (opcional)"
-        placeholder="Ex.: light, marca preferida"
+        label={t.editor.note}
+        placeholder={t.editor.notePlaceholder}
         value={draft.note}
         onChange={(event) => update({ note: event.target.value })}
         maxLength={60}
       />
 
       <SelectField
-        label="Seção do mercado"
+        label={t.editor.section}
         options={sections}
         value={draft.section}
         onChange={(event) => {
@@ -111,13 +119,13 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
       />
 
       <Button type="submit" size="lg" block disabled={!draft.name.trim() || !!duplicate}>
-        Salvar
+        {t.common.save}
       </Button>
 
       {target.mode === 'edit' && (
         <Button variant="danger" block onClick={handleDelete}>
           <Trash2 className="size-5" aria-hidden />
-          Excluir item
+          {t.editor.delete}
         </Button>
       )}
     </form>

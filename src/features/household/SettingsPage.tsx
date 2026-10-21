@@ -5,9 +5,12 @@ import { useBackgroundWrite } from '@/components/toast/useBackgroundWrite'
 import { Button } from '@/components/ui/Button'
 import { IconButton } from '@/components/ui/IconButton'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { TextField } from '@/components/ui/TextField'
 import { useCurrentUser } from '@/features/auth/authContext'
 import { signOut } from '@/features/auth/authService'
+import { useI18n } from '@/i18n/i18nContext'
+import { LOCALES } from '@/i18n/locales'
 import { InviteCard } from './components/InviteCard'
 import { SectionsEditor } from './components/SectionsEditor'
 import { renameHousehold } from './householdRepository'
@@ -18,6 +21,7 @@ export function SettingsPage() {
   const user = useCurrentUser()
   const { household, items, me } = useHousehold()
   const write = useBackgroundWrite()
+  const { t, locale, setLocale } = useI18n()
   const [name, setName] = useState(household.name)
 
   function commitName() {
@@ -29,16 +33,16 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <PageHeader
-        title="Ajustes"
+        title={t.settings.title}
         actions={
-          <IconButton label="Voltar" onClick={() => (window.history.state?.idx > 0 ? navigate(-1) : navigate('/casa'))}>
+          <IconButton label={t.common.back} onClick={() => (window.history.state?.idx > 0 ? navigate(-1) : navigate('/casa'))}>
             <ArrowLeft className="size-7" />
           </IconButton>
         }
       />
 
       <div className="flex flex-col gap-8 px-4">
-        <SettingsSection title="Família">
+        <SettingsSection title={t.settings.family}>
           <ul className="flex flex-col gap-2">
             {household.memberIds.map((memberId) => {
               const member = household.members[memberId]
@@ -48,14 +52,14 @@ export function SettingsPage() {
                     <img src={member.photoURL} alt="" referrerPolicy="no-referrer" className="size-11 rounded-full" />
                   ) : (
                     <span className="flex size-11 items-center justify-center rounded-full bg-brand-100 font-bold text-brand-800">
-                      {member?.name.charAt(0) ?? '?'}
+                      {member?.name.charAt(0) || '?'}
                     </span>
                   )}
                   <span className="flex-1 text-lg">
-                    {member?.name ?? 'Sem nome'}
-                    {memberId === me.id && <span className="text-slate-500"> (você)</span>}
+                    {member?.name || t.common.noName}
+                    {memberId === me.id && <span className="text-slate-500">{t.settings.you}</span>}
                   </span>
-                  {memberId === household.ownerId && <span className="text-sm text-slate-500">criou a lista</span>}
+                  {memberId === household.ownerId && <span className="text-sm text-slate-500">{t.settings.owner}</span>}
                 </li>
               )
             })}
@@ -63,9 +67,9 @@ export function SettingsPage() {
           <InviteCard household={household} />
         </SettingsSection>
 
-        <SettingsSection title="Lista">
+        <SettingsSection title={t.settings.list}>
           <TextField
-            label="Nome da lista"
+            label={t.settings.listName}
             value={name}
             maxLength={60}
             onChange={(event) => setName(event.target.value)}
@@ -74,17 +78,26 @@ export function SettingsPage() {
           />
         </SettingsSection>
 
-        <SettingsSection title="Seções do mercado">
+        <SettingsSection title={t.settings.sections}>
           <SectionsEditor household={household} items={items} />
         </SettingsSection>
 
-        <SettingsSection title="Sua conta">
+        <SettingsSection title={t.settings.language}>
+          <SegmentedControl
+            label={t.settings.language}
+            value={locale}
+            onChange={setLocale}
+            options={LOCALES.map((option) => ({ value: option, label: t.languageRegions[option] }))}
+          />
+        </SettingsSection>
+
+        <SettingsSection title={t.settings.account}>
           <p className="text-slate-600">
-            Conectado como <strong>{user.email}</strong>
+            {t.settings.signedInAs} <strong>{user.email}</strong>
           </p>
           <Button variant="secondary" block onClick={() => void signOut()}>
             <LogOut className="size-5" aria-hidden />
-            Sair da conta
+            {t.auth.signOut}
           </Button>
         </SettingsSection>
       </div>

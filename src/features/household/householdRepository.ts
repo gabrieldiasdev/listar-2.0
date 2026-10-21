@@ -14,7 +14,6 @@ import type { User } from 'firebase/auth'
 import { db } from '@/lib/firebase'
 import { randomCode, readSnapshot } from '@/lib/firestore'
 import type { Subscribe } from '@/lib/useSubscription'
-import { DEFAULT_SECTIONS } from '@/features/items/sections'
 import type { Household, Member, UserProfile } from './model'
 
 const householdConverter: FirestoreDataConverter<Household> = {
@@ -38,7 +37,7 @@ const householdRef = (householdId: string) => doc(householdsRef, householdId)
 const userRef = (userId: string) => doc(db, 'users', userId)
 
 function toMember(user: User): Member {
-  return { name: user.displayName?.split(' ')[0] ?? 'Sem nome', photoURL: user.photoURL }
+  return { name: user.displayName?.split(' ')[0] ?? '', photoURL: user.photoURL }
 }
 
 export function subscribeUserProfile(userId: string): Subscribe<UserProfile> {
@@ -71,7 +70,11 @@ export function setActiveHousehold(userId: string, householdId: string | null) {
 }
 
 /** Returns the new id synchronously; the batch completes in the background (works offline). */
-export function createHousehold(user: User, name: string): { id: string; committed: Promise<void> } {
+export function createHousehold(
+  user: User,
+  name: string,
+  sections: string[],
+): { id: string; committed: Promise<void> } {
   const ref = doc(collection(db, 'households'))
   const batch = writeBatch(db)
   batch.set(ref, {
@@ -79,7 +82,7 @@ export function createHousehold(user: User, name: string): { id: string; committ
     ownerId: user.uid,
     memberIds: [user.uid],
     members: { [user.uid]: toMember(user) },
-    sections: DEFAULT_SECTIONS,
+    sections,
     inviteCode: randomCode(),
     createdAt: serverTimestamp(),
   })

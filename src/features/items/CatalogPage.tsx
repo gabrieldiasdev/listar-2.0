@@ -6,19 +6,23 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import { useHousehold } from '@/features/household/householdContext'
+import { useI18n } from '@/i18n/i18nContext'
 import { normalizeText } from '@/lib/text'
 import { ImportSheet } from './components/ImportSheet'
 import { ItemEditorSheet, type EditorTarget } from './components/ItemEditorSheet'
 import { ItemRow } from './components/ItemRow'
 import { SearchBar } from './components/SearchBar'
-import { groupBySection, suggestSection } from './sections'
+import { groupBySection } from './sections'
 import { useItemActions } from './useItemActions'
+import { useSuggestSection } from './useSuggestSection'
 
 type Filter = 'all' | 'needed'
 
 export function CatalogPage() {
   const { household, items, memberName } = useHousehold()
   const actions = useItemActions()
+  const suggestSection = useSuggestSection()
+  const { t } = useI18n()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
   const [editorTarget, setEditorTarget] = useState<EditorTarget | null>(null)
@@ -38,23 +42,20 @@ export function CatalogPage() {
 
   const hasExactMatch = items.some((item) => normalizeText(item.name) === searchKey)
 
-  const subtitle =
-    neededCount === 0 ? 'Nada marcado para comprar' : `${neededCount} ${neededCount === 1 ? 'item' : 'itens'} para comprar`
-
   return (
     <>
-      <PageHeader title={household.name} subtitle={subtitle} actions={<SettingsLink />}>
+      <PageHeader title={household.name} subtitle={t.catalog.toBuy(neededCount)} actions={<SettingsLink />}>
         {items.length > 0 && (
           <div className="flex flex-col gap-3">
             <SearchBar value={search} onChange={setSearch} />
             {!search && (
               <SegmentedControl
-                label="Mostrar"
+                label={t.catalog.filterLabel}
                 value={filter}
                 onChange={setFilter}
                 options={[
-                  { value: 'all', label: 'Todos' },
-                  { value: 'needed', label: `Para comprar (${neededCount})` },
+                  { value: 'all', label: t.catalog.filterAll },
+                  { value: 'needed', label: t.catalog.filterNeeded(neededCount) },
                 ]}
               />
             )}
@@ -66,15 +67,15 @@ export function CatalogPage() {
         {items.length === 0 && (
           <EmptyState
             icon={ClipboardList}
-            title="Sua lista está vazia"
-            description="Adicione os produtos que a casa costuma comprar. Depois é só marcar o que está faltando."
+            title={t.catalog.emptyTitle}
+            description={t.catalog.emptyDescription}
             action={
               <div className="flex flex-col gap-3">
                 <Button size="lg" onClick={() => setImportOpen(true)}>
-                  Importar uma lista
+                  {t.catalog.importList}
                 </Button>
                 <Button variant="secondary" size="lg" onClick={() => setEditorTarget({ mode: 'create' })}>
-                  Adicionar um item
+                  {t.catalog.addFirst}
                 </Button>
               </div>
             }
@@ -93,12 +94,16 @@ export function CatalogPage() {
             }}
           >
             <Plus className="size-6 text-brand-700" aria-hidden />
-            <span className="truncate">Adicionar “{search.trim()}” e marcar</span>
+            <span className="truncate">{t.catalog.quickAdd(search.trim())}</span>
           </Button>
         )}
 
         {items.length > 0 && groups.length === 0 && !searchKey && (
-          <EmptyState icon={SearchX} title="Nada marcado" description="Toque em um item na aba Todos para marcar que precisa comprar." />
+          <EmptyState
+            icon={SearchX}
+            title={t.catalog.nothingFlaggedTitle}
+            description={t.catalog.nothingFlaggedDescription}
+          />
         )}
 
         {groups.map((group) => (
@@ -126,7 +131,7 @@ export function CatalogPage() {
           className="fixed right-4 bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 rounded-full shadow-lg"
         >
           <Plus className="size-6" aria-hidden />
-          Novo item
+          {t.catalog.newItem}
         </Button>
       )}
 

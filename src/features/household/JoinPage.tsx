@@ -4,12 +4,14 @@ import { Link, Navigate, useParams } from 'react-router'
 import { buttonClassName } from '@/components/ui/buttonStyles'
 import { FullScreenLoader } from '@/components/ui/Spinner'
 import { useCurrentUser } from '@/features/auth/authContext'
+import { useI18n } from '@/i18n/i18nContext'
 import { joinHousehold } from './householdRepository'
 
-type JoinState = { status: 'joining' } | { status: 'joined' } | { status: 'failed'; message: string }
+type JoinState = { status: 'joining' } | { status: 'joined' } | { status: 'failed'; reason: 'invalid' | 'unreachable' }
 
 export function JoinPage() {
   const user = useCurrentUser()
+  const { t } = useI18n()
   const { householdId = '', code = '' } = useParams()
   const [state, setState] = useState<JoinState>({ status: 'joining' })
   const started = useRef(false)
@@ -22,24 +24,21 @@ export function JoinPage() {
       .catch((error: unknown) => {
         console.error(error)
         const denied = error instanceof FirebaseError && ['permission-denied', 'not-found'].includes(error.code)
-        setState({
-          status: 'failed',
-          message: denied
-            ? 'Este convite não é mais válido. Peça um link novo para quem te convidou.'
-            : 'Não foi possível entrar agora. Verifique a internet e tente de novo.',
-        })
+        setState({ status: 'failed', reason: denied ? 'invalid' : 'unreachable' })
       })
   }, [user, householdId, code])
 
-  if (state.status === 'joining') return <FullScreenLoader label="Entrando na lista…" />
+  if (state.status === 'joining') return <FullScreenLoader label={t.join.joining} />
   if (state.status === 'joined') return <Navigate to="/casa" replace />
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-6 px-6 text-center">
-      <h1 className="text-2xl font-bold text-slate-900">Não deu certo</h1>
-      <p className="text-lg text-slate-600">{state.message}</p>
+      <h1 className="text-2xl font-bold text-slate-900">{t.join.failedTitle}</h1>
+      <p className="text-lg text-slate-600">
+        {state.reason === 'invalid' ? t.join.invalidInvite : t.join.failed}
+      </p>
       <Link to="/" className={buttonClassName({ size: 'lg', block: true })}>
-        Voltar ao início
+        {t.join.goHome}
       </Link>
     </div>
   )

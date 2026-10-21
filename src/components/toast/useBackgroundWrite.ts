@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { useI18n } from '@/i18n/i18nContext'
 import { useToast } from './toastContext'
 
 /**
@@ -7,13 +8,14 @@ import { useToast } from './toastContext'
  */
 export function useBackgroundWrite() {
   const toast = useToast()
+  const { t } = useI18n()
   return useCallback(
     (write: Promise<unknown>) => {
       write.catch((error: unknown) => {
         console.error(error)
-        toast({ message: 'Não foi possível salvar. Tente de novo.', tone: 'error' })
+        toast({ message: t.common.saveFailed, tone: 'error' })
       })
     },
-    [toast],
+    [toast, t],
   )
 }

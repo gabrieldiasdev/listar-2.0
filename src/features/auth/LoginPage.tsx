@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router'
 import { Button } from '@/components/ui/Button'
 import { FullScreenLoader } from '@/components/ui/Spinner'
+import { useI18n } from '@/i18n/i18nContext'
 import { useAuth } from './authContext'
 import { isUserCancellation, signInWithGoogle } from './authService'
 
 export function LoginPage() {
   const { user, loading } = useAuth()
+  const { t } = useI18n()
   const location = useLocation()
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -25,7 +27,7 @@ export function LoginPage() {
     } catch (signInError) {
       if (!isUserCancellation(signInError)) {
         console.error(signInError)
-        setError('Não foi possível entrar. Verifique a internet e tente de novo.')
+        setError(t.auth.signInFailed)
       }
     } finally {
       setPending(false)
@@ -37,12 +39,12 @@ export function LoginPage() {
       <img src="/logo.svg" alt="" className="size-28 rounded-3xl shadow-lg" />
       <div>
         <h1 className="text-4xl font-bold text-slate-900">Listar</h1>
-        <p className="mt-2 text-lg text-slate-600">A lista de mercado da família, sempre no seu bolso.</p>
+        <p className="mt-2 text-lg text-slate-600">{t.auth.tagline}</p>
       </div>
 
       <Button size="lg" block onClick={handleSignIn} disabled={pending}>
         <GoogleIcon />
-        {pending ? 'Entrando…' : 'Entrar com Google'}
+        {pending ? t.auth.signingIn : t.auth.signIn}
       </Button>
 
       {error && (

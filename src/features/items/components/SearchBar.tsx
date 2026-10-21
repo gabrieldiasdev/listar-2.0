@@ -1,4 +1,5 @@
 import { Search, X } from 'lucide-react'
+import { useI18n } from '@/i18n/i18nContext'
 
 interface SearchBarProps {
   value: string
@@ -6,13 +7,14 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ value, onChange }: SearchBarProps) {
+  const { t } = useI18n()
   return (
     <div className="relative">
       <Search className="pointer-events-none absolute top-1/2 left-4 size-6 -translate-y-1/2 text-slate-400" aria-hidden />
       <input
         type="search"
-        aria-label="Buscar item"
-        placeholder="Buscar ou adicionar item"
+        aria-label={t.catalog.searchLabel}
+        placeholder={t.catalog.searchPlaceholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         enterKeyHint="search"
@@ -21,7 +23,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       {value && (
         <button
           type="button"
-          aria-label="Limpar busca"
+          aria-label={t.catalog.clearSearch}
           onClick={() => onChange('')}
           className="absolute top-1/2 right-1 flex size-12 -translate-y-1/2 items-center justify-center rounded-full text-slate-500 active:bg-slate-100"
         >

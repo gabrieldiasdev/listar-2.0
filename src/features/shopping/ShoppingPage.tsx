@@ -9,12 +9,14 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { useHousehold } from '@/features/household/householdContext'
 import { groupBySection } from '@/features/items/sections'
 import { useItemActions } from '@/features/items/useItemActions'
+import { useI18n } from '@/i18n/i18nContext'
 import { compareText } from '@/lib/text'
 import { ShoppingRow } from './components/ShoppingRow'
 
 export function ShoppingPage() {
   const { household, items } = useHousehold()
   const actions = useItemActions()
+  const { t } = useI18n()
 
   const { pendingGroups, cartItems, total } = useMemo(() => {
     const needed = items.filter((item) => item.needed)
@@ -28,14 +30,14 @@ export function ShoppingPage() {
   if (total === 0) {
     return (
       <>
-        <PageHeader title="Mercado" actions={<SettingsLink />} />
+        <PageHeader title={t.shopping.title} actions={<SettingsLink />} />
         <EmptyState
           icon={PartyPopper}
-          title="Nada para comprar"
-          description="Quando alguém marcar um item na aba Casa, ele aparece aqui."
+          title={t.shopping.emptyTitle}
+          description={t.shopping.emptyDescription}
           action={
             <Link to="/casa" className={buttonClassName({ size: 'lg' })}>
-              Ir para a lista da casa
+              {t.shopping.goToList}
             </Link>
           }
         />
@@ -48,13 +50,13 @@ export function ShoppingPage() {
   return (
     <>
       <PageHeader
-        title="Mercado"
-        subtitle={`${cartItems.length} de ${total} no carrinho`}
+        title={t.shopping.title}
+        subtitle={t.shopping.progress(cartItems.length, total)}
         actions={<SettingsLink />}
       >
         <div
           role="progressbar"
-          aria-label="Itens no carrinho"
+          aria-label={t.shopping.progressLabel}
           aria-valuenow={progress}
           aria-valuemin={0}
           aria-valuemax={100}
@@ -78,7 +80,7 @@ export function ShoppingPage() {
 
         {cartItems.length > 0 && (
           <section className="mb-6">
-            <h2 className="mb-2 px-1 text-sm font-bold tracking-wide text-brand-700 uppercase">No carrinho</h2>
+            <h2 className="mb-2 px-1 text-sm font-bold tracking-wide text-brand-700 uppercase">{t.shopping.inCart}</h2>
             <ul className="flex flex-col gap-2">
               {cartItems.map((item) => (
                 <ShoppingRow key={item.id} item={item} onToggle={() => actions.toggleInCart(item)} />
@@ -91,7 +93,7 @@ export function ShoppingPage() {
       {cartItems.length > 0 && (
         <div className="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-10 bg-gradient-to-t from-slate-50 from-60% px-4 pt-6 pb-3">
           <Button size="lg" block className="mx-auto max-w-2xl shadow-lg" onClick={() => actions.finishShopping(cartItems)}>
-            Finalizar compra
+            {t.shopping.finish}
           </Button>
         </div>
       )}

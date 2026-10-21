@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useEffect, useRef, type ReactNode } from 'react'
+import { useI18n } from '@/i18n/i18nContext'
 import { IconButton } from './IconButton'
 
 interface SheetProps {
@@ -12,6 +13,7 @@ interface SheetProps {
 
 /** Bottom sheet built on the native <dialog>, which gives focus trapping, Esc and back-button handling for free. */
 export function Sheet({ open, onClose, title, children, footer }: SheetProps) {
+  const { t } = useI18n()
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export function Sheet({ open, onClose, title, children, footer }: SheetProps) {
         <div className="flex max-h-[90dvh] flex-col">
           <header className="flex items-center justify-between gap-2 border-b border-slate-200 py-2 pr-2 pl-5">
             <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-            <IconButton label="Fechar" onClick={onClose}>
+            <IconButton label={t.common.close} onClick={onClose}>
               <X className="size-6" />
             </IconButton>
           </header>

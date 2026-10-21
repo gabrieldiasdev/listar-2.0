@@ -2,8 +2,11 @@ import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { cn } from '@/lib/cn'
 import { site } from '../site'
+import { useLandingContent } from '../useLandingContent'
 
 export function CallToAction({ className }: { className?: string }) {
+  const { cta } = useLandingContent()
+
   return (
     <Link
       to={site.startPath}
@@ -13,7 +16,7 @@ export function CallToAction({ className }: { className?: string }) {
         className,
       )}
     >
-      Começar gratuitamente
+      {cta}
       <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
     </Link>
   )

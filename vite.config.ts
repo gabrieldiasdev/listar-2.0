@@ -29,10 +29,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       pwaAssets: { config: true },
       manifest: {
-        name: 'Listar — Lista de Mercado',
+        name: 'Listar — Lista de compras',
         short_name: 'Listar',
-        description: 'Lista de mercado da família',
-        lang: 'pt-BR',
+        description: 'A lista de compras da casa, partilhada com a família',
+        lang: 'pt',
         theme_color: '#047857',
         background_color: '#f8fafc',
         display: 'standalone',
