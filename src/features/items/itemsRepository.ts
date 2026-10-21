@@ -11,9 +11,9 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { readSnapshot, toDate } from '@/lib/firestore'
-import { capitalize } from '@/lib/text'
+import { capitalize, clampText } from '@/lib/text'
 import type { Subscribe } from '@/lib/useSubscription'
-import type { Item, ItemDraft } from './model'
+import { ITEM_LIMITS, type Item, type ItemDraft } from './model'
 
 type ItemFields = Omit<Item, 'id' | 'updatedAt'>
 
@@ -38,17 +38,18 @@ const itemConverter: FirestoreDataConverter<Item> = {
 const itemsRef = (householdId: string) => collection(db, 'households', householdId, 'items')
 const itemRef = (householdId: string, itemId: string) => doc(itemsRef(householdId), itemId)
 
+function draftText(draft: ItemDraft) {
+  return {
+    name: capitalize(clampText(draft.name, ITEM_LIMITS.name)),
+    section: clampText(draft.section, ITEM_LIMITS.section),
+    note: clampText(draft.note, ITEM_LIMITS.note),
+    quantity: clampText(draft.quantity, ITEM_LIMITS.quantity),
+  }
+}
+
 function draftToFields(draft: ItemDraft, userId: string): ItemFields {
   const needed = draft.needed ?? false
-  return {
-    name: capitalize(draft.name.trim()),
-    section: draft.section,
-    note: draft.note?.trim() ?? '',
-    quantity: draft.quantity?.trim() ?? '',
-    needed,
-    inCart: false,
-    flaggedBy: needed ? userId : null,
-  }
+  return { ...draftText(draft), needed, inCart: false, flaggedBy: needed ? userId : null }
 }
 
 export function subscribeItems(householdId: string): Subscribe<Item[]> {
@@ -79,6 +80,19 @@ export function importItems(householdId: string, drafts: ItemDraft[], userId: st
 
 export function updateItem(householdId: string, itemId: string, changes: Partial<ItemFields>) {
   return updateDoc(itemRef(householdId, itemId), { ...changes, updatedAt: serverTimestamp() })
+}
+
+/** Applies an edit; a quantity only makes sense while the item is needed, and keeps who first asked for it. */
+export function updateItemFromDraft(householdId: string, item: Item, draft: ItemDraft, userId: string) {
+  const needed = draft.needed ?? item.needed
+  const text = draftText(draft)
+  return updateItem(householdId, item.id, {
+    ...text,
+    quantity: needed ? text.quantity : '',
+    needed,
+    inCart: needed && item.inCart,
+    flaggedBy: needed ? (item.needed ? item.flaggedBy : userId) : null,
+  })
 }
 
 export function deleteItem(householdId: string, itemId: string) {

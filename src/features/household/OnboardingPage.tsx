@@ -10,6 +10,7 @@ import { signOut } from '@/features/auth/authService'
 import { defaultSections } from '@/features/items/sections'
 import { useI18n } from '@/i18n/i18nContext'
 import { createHousehold } from './householdRepository'
+import { HOUSEHOLD_LIMITS } from './model'
 import { useUserProfile } from './useUserProfile'
 
 export function OnboardingPage() {
@@ -41,7 +42,7 @@ export function OnboardingPage() {
           label={t.onboarding.listName}
           value={name}
           onChange={(event) => setName(event.target.value)}
-          maxLength={60}
+          maxLength={HOUSEHOLD_LIMITS.name}
           required
         />
         <Button type="submit" size="lg" block disabled={!name.trim()}>

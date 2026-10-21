@@ -6,7 +6,7 @@ import type { Item } from '@/features/items/model'
 import { useI18n } from '@/i18n/i18nContext'
 import { normalizeText } from '@/lib/text'
 import { updateSections } from '../householdRepository'
-import type { Household } from '../model'
+import { HOUSEHOLD_LIMITS, type Household } from '../model'
 
 interface SectionsEditorProps {
   household: Household
@@ -33,7 +33,8 @@ export function SectionsEditor({ household, items }: SectionsEditorProps) {
   function handleAdd(event: FormEvent) {
     event.preventDefault()
     const name = newSection.trim()
-    if (!name || sections.some((section) => normalizeText(section) === normalizeText(name))) return
+    if (!name || sections.length >= HOUSEHOLD_LIMITS.sections) return
+    if (sections.some((section) => normalizeText(section) === normalizeText(name))) return
     save([...sections, name])
     setNewSection('')
   }
@@ -74,7 +75,7 @@ export function SectionsEditor({ household, items }: SectionsEditorProps) {
           placeholder={t.settings.newSection}
           value={newSection}
           onChange={(event) => setNewSection(event.target.value)}
-          maxLength={40}
+          maxLength={HOUSEHOLD_LIMITS.sectionName}
           className="min-h-12 flex-1 rounded-xl border border-slate-300 bg-white px-4 text-lg focus:border-brand-600 focus:outline-3 focus:outline-brand-200"
         />
         <IconButton type="submit" label={t.settings.addSection} className="rounded-xl bg-brand-700 text-white active:bg-brand-800">

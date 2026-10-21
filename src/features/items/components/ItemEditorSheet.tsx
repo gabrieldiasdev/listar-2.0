@@ -8,7 +8,7 @@ import { TextField } from '@/components/ui/TextField'
 import { useHousehold } from '@/features/household/householdContext'
 import { useI18n } from '@/i18n/i18nContext'
 import { normalizeText } from '@/lib/text'
-import type { Item, ItemDraft } from '../model'
+import { ITEM_LIMITS, type Item, type ItemDraft } from '../model'
 import { useItemActions } from '../useItemActions'
 import { useSuggestSection } from '../useSuggestSection'
 
@@ -82,7 +82,7 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
         label={t.editor.name}
         value={draft.name}
         onChange={(event) => handleNameChange(event.target.value)}
-        maxLength={80}
+        maxLength={ITEM_LIMITS.name}
         required
         autoFocus={target.mode === 'create' && !target.name}
         hint={duplicate ? t.editor.duplicate(duplicate.name) : undefined}
@@ -96,7 +96,7 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
           placeholder={t.editor.quantityPlaceholder}
           value={draft.quantity}
           onChange={(event) => update({ quantity: event.target.value })}
-          maxLength={40}
+          maxLength={ITEM_LIMITS.quantity}
         />
       )}
 
@@ -105,7 +105,7 @@ function ItemEditorForm({ target, onDone }: { target: EditorTarget; onDone: () =
         placeholder={t.editor.notePlaceholder}
         value={draft.note}
         onChange={(event) => update({ note: event.target.value })}
-        maxLength={60}
+        maxLength={ITEM_LIMITS.note}
       />
 
       <SelectField

@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { RecaptchaNotice } from '@/components/RecaptchaNotice'
 import { site } from '@/config/site'
 import { useI18n } from '@/i18n/i18nContext'
 import { LOCALES } from '@/i18n/locales'
@@ -58,6 +59,7 @@ export function ClosingSection() {
             </nav>
           </div>
         </div>
+        <RecaptchaNotice className="mx-auto max-w-6xl px-5 pb-8 text-center sm:px-8 sm:text-left" />
       </footer>
     </>
   )

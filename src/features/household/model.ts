@@ -1,3 +1,6 @@
+/** Limits, also enforced by firestore.rules. */
+export const HOUSEHOLD_LIMITS = { name: 60, sectionName: 40, sections: 40, members: 20 } as const
+
 export interface Member {
   name: string
   photoURL: string | null
