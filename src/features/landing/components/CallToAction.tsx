@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
+import { site } from '@/config/site'
 import { cn } from '@/lib/cn'
-import { site } from '../site'
 import { useLandingContent } from '../useLandingContent'
 
 export function CallToAction({ className }: { className?: string }) {

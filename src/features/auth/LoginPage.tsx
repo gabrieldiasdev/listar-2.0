@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Navigate, useLocation } from 'react-router'
+import { Link, Navigate, useLocation } from 'react-router'
 import { Button } from '@/components/ui/Button'
 import { FullScreenLoader } from '@/components/ui/Spinner'
+import { site } from '@/config/site'
 import { useI18n } from '@/i18n/i18nContext'
 import { useAuth } from './authContext'
 import { isUserCancellation, signInWithGoogle } from './authService'
@@ -46,6 +47,18 @@ export function LoginPage() {
         <GoogleIcon />
         {pending ? t.auth.signingIn : t.auth.signIn}
       </Button>
+
+      <p className="text-sm text-slate-500">
+        {t.auth.legalNotice.before}
+        <Link to={site.termsPath} className="font-medium text-brand-800 underline underline-offset-2">
+          {t.auth.legalNotice.terms}
+        </Link>
+        {t.auth.legalNotice.middle}
+        <Link to={site.privacyPath} className="font-medium text-brand-800 underline underline-offset-2">
+          {t.auth.legalNotice.privacy}
+        </Link>
+        {t.auth.legalNotice.after}
+      </p>
 
       {error && (
         <p role="alert" className="text-red-700">

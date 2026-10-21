@@ -1,4 +1,11 @@
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut as firebaseSignOut } from 'firebase/auth'
+import {
+  GoogleAuthProvider,
+  reauthenticateWithPopup,
+  signInWithPopup,
+  signInWithRedirect,
+  signOut as firebaseSignOut,
+  type User,
+} from 'firebase/auth'
 import { FirebaseError } from 'firebase/app'
 import { auth } from '@/lib/firebase'
 
@@ -26,4 +33,9 @@ export function isUserCancellation(error: unknown): boolean {
 
 export function signOut() {
   return firebaseSignOut(auth)
+}
+
+/** Sensitive operations such as deleting the account require a recent sign-in. */
+export function reauthenticateWithGoogle(user: User) {
+  return reauthenticateWithPopup(user, provider)
 }

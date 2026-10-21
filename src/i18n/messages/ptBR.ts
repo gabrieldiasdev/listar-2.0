@@ -23,6 +23,13 @@ export const ptBR = {
     signingIn: 'Entrando…',
     signInFailed: 'Não foi possível entrar. Verifique a internet e tente de novo.',
     signOut: 'Sair da conta',
+    legalNotice: {
+      before: 'Ao entrar, você aceita os ',
+      terms: 'Termos de Uso',
+      middle: ' e a ',
+      privacy: 'Política de Privacidade',
+      after: '.',
+    },
   },
   onboarding: {
     greeting: (name?: string) => (name ? `Olá, ${name}!` : 'Olá!'),
@@ -120,6 +127,11 @@ export const ptBR = {
     language: 'Idioma',
     account: 'Sua conta',
     signedInAs: 'Conectado como',
+    privacy: 'Privacidade',
+    privacyPolicy: 'Política de Privacidade',
+    terms: 'Termos de Uso',
+    leaveList: 'Sair desta lista',
+    deleteAccount: 'Excluir conta',
   },
   invite: {
     help: 'Envie o link para quem vai usar a lista com você. Quem abrir entra direto.',
@@ -136,6 +148,37 @@ export const ptBR = {
   languageRegions: {
     'pt-PT': 'Portugal',
     'pt-BR': 'Brasil',
+  },
+  leave: {
+    title: (listName: string) => `Sair de "${listName}"?`,
+    shared: 'Você deixa de ver esta lista. Para voltar, vai precisar de um novo convite.',
+    lastMember: 'Você é o único membro: a lista e todos os itens serão apagados.',
+    confirm: 'Sair da lista',
+    cancel: 'Cancelar',
+  },
+  deleteAccount: {
+    title: 'Excluir conta',
+    intro: 'Ao excluir a sua conta:',
+    consequences: [
+      'seu perfil e seus dados de acesso são apagados;',
+      'você sai de todas as listas de que faz parte;',
+      'as listas em que você é o único membro são apagadas com todos os itens.',
+    ],
+    others: 'As outras pessoas das suas listas continuam com elas.',
+    irreversible: 'Não é possível desfazer.',
+    reauthHint: 'Para confirmar, vamos pedir que você entre de novo com a sua conta Google.',
+    confirm: 'Excluir minha conta',
+    deleting: 'Excluindo…',
+    cancel: 'Cancelar',
+    offline: 'Você precisa estar conectado à internet para excluir a conta.',
+    failed: 'Não foi possível excluir a conta. Tente de novo.',
+    doneTitle: 'Conta excluída',
+    doneDescription: 'Seus dados foram apagados. Obrigado por ter usado o Listar.',
+    goHome: 'Ir para o início',
+  },
+  legal: {
+    back: 'Voltar',
+    updated: (date: string) => `Última atualização: ${date}`,
   },
 }
 

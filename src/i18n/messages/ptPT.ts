@@ -24,6 +24,13 @@ export const ptPT: Messages = {
     signingIn: 'A entrar…',
     signInFailed: 'Não foi possível entrar. Verifique a ligação à internet e tente novamente.',
     signOut: 'Terminar sessão',
+    legalNotice: {
+      before: 'Ao entrar, aceita os ',
+      terms: 'Termos de Utilização',
+      middle: ' e a ',
+      privacy: 'Política de Privacidade',
+      after: '.',
+    },
   },
   onboarding: {
     greeting: (name?: string) => (name ? `Olá, ${name}!` : 'Olá!'),
@@ -121,6 +128,11 @@ export const ptPT: Messages = {
     language: 'Idioma',
     account: 'A sua conta',
     signedInAs: 'Sessão iniciada como',
+    privacy: 'Privacidade',
+    privacyPolicy: 'Política de Privacidade',
+    terms: 'Termos de Utilização',
+    leaveList: 'Sair desta lista',
+    deleteAccount: 'Eliminar conta',
   },
   invite: {
     help: 'Envie o link a quem vai usar a lista consigo. Quem o abrir entra diretamente.',
@@ -137,5 +149,36 @@ export const ptPT: Messages = {
   languageRegions: {
     'pt-PT': 'Portugal',
     'pt-BR': 'Brasil',
+  },
+  leave: {
+    title: (listName: string) => `Sair de "${listName}"?`,
+    shared: 'Deixa de ver esta lista. Para voltar, vai precisar de um novo convite.',
+    lastMember: 'É o único membro: a lista e todos os produtos serão apagados.',
+    confirm: 'Sair da lista',
+    cancel: 'Cancelar',
+  },
+  deleteAccount: {
+    title: 'Eliminar conta',
+    intro: 'Ao eliminar a sua conta:',
+    consequences: [
+      'o seu perfil e os dados de acesso são apagados;',
+      'sai de todas as listas de que faz parte;',
+      'as listas em que é o único membro são apagadas com todos os produtos.',
+    ],
+    others: 'As outras pessoas das suas listas continuam com elas.',
+    irreversible: 'Esta ação não pode ser anulada.',
+    reauthHint: 'Para confirmar, vamos pedir que entre novamente com a sua conta Google.',
+    confirm: 'Eliminar a minha conta',
+    deleting: 'A eliminar…',
+    cancel: 'Cancelar',
+    offline: 'Precisa de ligação à internet para eliminar a conta.',
+    failed: 'Não foi possível eliminar a conta. Tente novamente.',
+    doneTitle: 'Conta eliminada',
+    doneDescription: 'Os seus dados foram apagados. Obrigado por ter usado o Listar.',
+    goHome: 'Ir para o início',
+  },
+  legal: {
+    back: 'Voltar',
+    updated: (date: string) => `Última atualização: ${date}`,
   },
 }
